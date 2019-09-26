@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 @Configuration// // 扫描 Mapper 接口并容器管理
 @MapperScan(value = "com.kayak.fenbu.mapper.oracleMapper", sqlSessionTemplateRef = "moviesSqlSessionTemplate")
@@ -23,19 +24,23 @@ public class OracleDataSourceConfig {
 
     @Bean(name = "moviesDataSource")
     @Primary
-    public DataSource masterDataSource(OracleConfig oracleConfig) {
+    public DataSource masterDataSource(OracleConfig oracleConfig) throws SQLException {
         DruidXADataSource druidXADataSource = new DruidXADataSource();
         druidXADataSource.setUrl(oracleConfig.getUrl());
         druidXADataSource.setUsername(oracleConfig.getUsername());
         druidXADataSource.setPassword(oracleConfig.getPassword());
 
-
         AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
         atomikosDataSourceBean.setXaDataSource(druidXADataSource);
         atomikosDataSourceBean.setUniqueResourceName("moviesDataSource");
-        atomikosDataSourceBean.setPoolSize(5);
+        atomikosDataSourceBean.setMaxPoolSize(oracleConfig.getMaxPoolSize());
+        atomikosDataSourceBean.setMaxLifetime(oracleConfig.getMaxLifetime());
+        atomikosDataSourceBean.setBorrowConnectionTimeout(oracleConfig.getBorrowConnectionTimeout());
+        atomikosDataSourceBean.setLoginTimeout(oracleConfig.getLoginTimeout());
+        atomikosDataSourceBean.setMaintenanceInterval(oracleConfig.getMaintenanceInterval());
+        atomikosDataSourceBean.setMaxIdleTime(oracleConfig.getMaxIdleTime());
         return atomikosDataSourceBean;
-    }     /*    * 使用这个来做总事务 后面的数据源就不用设置事务了    * */
+    }
 
     @Bean(name = "moviesSqlSessionTemplate")
     public SqlSessionTemplate regSqlSessionTemplate(@Qualifier("moviesSqlSessionFactory")SqlSessionFactory sqlSessionFactory) {

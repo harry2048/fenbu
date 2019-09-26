@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 @Configuration// // 扫描 Mapper接口
 @MapperScan(value = "com.kayak.fenbu.mapper.mysqlMapper", sqlSessionTemplateRef = "teacherSqlSessionTemplate")
@@ -21,16 +22,23 @@ public class MysqlDataSourceConfig {
     private String mapper_locations;
 
     @Bean(name = "teacherDataSource")
-    public DataSource masterDataSource(MysqlConfig mysqlConfig) {
+    public DataSource masterDataSource(MysqlConfig mysqlConfig) throws SQLException {
         MysqlXADataSource mysqlXADataSource = new MysqlXADataSource();
         mysqlXADataSource.setUrl(mysqlConfig.getUrl());
         mysqlXADataSource.setUser(mysqlConfig.getUsername());
         mysqlXADataSource.setPassword(mysqlConfig.getPassword());
+        mysqlXADataSource.setPinGlobalTxToPhysicalConnection(true);
 
         AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
         atomikosDataSourceBean.setXaDataSource(mysqlXADataSource);
         atomikosDataSourceBean.setUniqueResourceName("teacherDataSource");
-        atomikosDataSourceBean.setPoolSize(5);
+        atomikosDataSourceBean.setMinPoolSize(mysqlConfig.getMinPoolSize());
+        atomikosDataSourceBean.setMaxPoolSize(mysqlConfig.getMaxPoolSize());
+        atomikosDataSourceBean.setMaxLifetime(mysqlConfig.getMaxLifetime());
+        atomikosDataSourceBean.setBorrowConnectionTimeout(mysqlConfig.getBorrowConnectionTimeout());
+        atomikosDataSourceBean.setLoginTimeout(mysqlConfig.getLoginTimeout());
+        atomikosDataSourceBean.setMaintenanceInterval(mysqlConfig.getMaintenanceInterval());
+        atomikosDataSourceBean.setMaxIdleTime(mysqlConfig.getMaxIdleTime());
         atomikosDataSourceBean.setTestQuery(mysqlConfig.getTestQuery());
         return atomikosDataSourceBean;
     }
