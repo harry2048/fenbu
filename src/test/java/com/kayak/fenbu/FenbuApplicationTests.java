@@ -11,7 +11,7 @@ public class FenbuApplicationTests {
 
     @Test
     public void contextLoads() {
-        int b = 777;
+        int b = 666;
     }
 
 }
