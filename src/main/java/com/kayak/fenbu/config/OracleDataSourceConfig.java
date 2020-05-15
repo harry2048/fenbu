@@ -33,6 +33,7 @@ public class OracleDataSourceConfig {
         AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
         atomikosDataSourceBean.setXaDataSource(druidXADataSource);
         atomikosDataSourceBean.setUniqueResourceName("moviesDataSource");
+//        atomikosDataSourceBean.setXaDataSourceClassName("com.alibaba.druid.pool.xa.DruidXADataSource");
         atomikosDataSourceBean.setMaxPoolSize(oracleConfig.getMaxPoolSize());
         atomikosDataSourceBean.setMaxLifetime(oracleConfig.getMaxLifetime());
         atomikosDataSourceBean.setBorrowConnectionTimeout(oracleConfig.getBorrowConnectionTimeout());
@@ -43,7 +44,7 @@ public class OracleDataSourceConfig {
     }
 
     @Bean(name = "moviesSqlSessionTemplate")
-    public SqlSessionTemplate regSqlSessionTemplate(@Qualifier("moviesSqlSessionFactory")SqlSessionFactory sqlSessionFactory) {
+    public SqlSessionTemplate regSqlSessionTemplate(@Qualifier("moviesSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 
